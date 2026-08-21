@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="2026 KBO 퓨처스리그 북부·남부리그 매직넘버 대시보드" />
+  <title>퓨처스 매직넘버</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="홈으로">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <span>FUTURES<br><b>NUMBER</b></span>
+    </a>
+    <div class="header-meta">
+      <span class="live-dot"></span>
+      <span>2026 SEASON</span>
+      <span class="header-divider"></span>
+      <span id="headerDate">08.18 기준</span>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-kicker">KBO FUTURES LEAGUE · 2026</div>
+      <h1>끝까지 남은 숫자,<br><em>매직넘버.</em></h1>
+      <p>취소 경기를 다시 편성하지 않는 퓨처스리그.<br>팀마다 다른 최종 경기 수까지 계산했습니다.</p>
+      <div class="hero-rule" aria-hidden="true"><span></span><i>⚾</i><span></span></div>
+    </section>
+
+    <nav class="league-switch" aria-label="리그 선택">
+      <button class="league-tab active" data-league="north">
+        <small>NORTH</small><strong>북부리그</strong><span class="tab-leader" id="northLeader"></span>
+      </button>
+      <button class="league-tab" data-league="south">
+        <small>SOUTH</small><strong>남부리그</strong><span class="tab-leader" id="southLeader"></span>
+      </button>
+    </nav>
+
+    <section class="dashboard" aria-live="polite">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow" id="leagueEnglish">NORTH LEAGUE</span>
+          <h2 id="leagueTitle">북부리그</h2>
+        </div>
+        <div class="updated"><span>DATA UPDATED</span><b>2026. 08. 18</b></div>
+      </div>
+
+      <article class="leader-card" id="leaderCard"></article>
+
+      <section class="rank-matrix-section">
+        <div class="table-headline">
+          <div><span class="eyebrow">SELF-CLINCH MATRIX</span><h3>순위별 자력 확정</h3></div>
+          <button class="info-button" id="matrixButton" aria-expanded="false" aria-controls="matrixPanel">읽는 법 <span>＋</span></button>
+        </div>
+        <aside class="formula-panel" id="matrixPanel" hidden>
+          <b>숫자는 해당 순위 이내를 자력으로 확정하는 데 필요한 승리 수입니다.</b>
+          <p><strong>확정</strong>은 이미 확보, <strong>타력</strong>은 전승해도 다른 팀의 패배가 필요한 상태입니다.</p>
+        </aside>
+        <div class="matrix-wrap"><table class="rank-matrix"><thead><tr><th>팀 / 현재</th><th>1위</th><th>2위</th><th>3위</th><th>4위</th><th>5위</th></tr></thead><tbody id="rankMatrixBody"></tbody></table></div>
+      </section>
+
+      <div class="table-headline">
+        <h3>현재 순위 &amp; 예상 경기 수</h3>
+        <button class="info-button" id="formulaButton" aria-expanded="false" aria-controls="formulaPanel">계산 기준 <span>＋</span></button>
+      </div>
+      <aside class="formula-panel" id="formulaPanel" hidden>
+        <b>팀마다 최종 경기 수가 다릅니다.</b>
+        <p>승률은 승 ÷ (승 + 패)로 계산하며 무승부는 제외합니다. 순위별 수치는 경쟁 팀들이 가능한 최고 승률을 기록해도 목표 순위 이내에 드는 최소 추가 승수입니다.</p>
+      </aside>
+
+      <div class="standings-wrap">
+        <table class="standings">
+          <thead><tr><th>순위</th><th>팀</th><th>경기</th><th>승-패-무</th><th>승률</th><th>승차</th><th>잔여</th><th>예상 최종</th></tr></thead>
+          <tbody id="standingsBody"></tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <section class="notice">
+      <span class="notice-icon">!</span>
+      <div><b>퓨처스리그 경기 운영 안내</b><p>우천·폭염 등으로 취소된 경기는 원칙적으로 재편성되지 않습니다. 잔여 일정 변경 시 예상 최종 경기 수와 매직넘버도 달라질 수 있습니다.</p></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>FUTURES NUMBER</span>
+    <p>KBO 공식 기록과 잔여 일정을 바탕으로 계산한 비공식 정보입니다.</p>
+    <div><a href="https://www.koreabaseball.com/Futures/TeamRank/North.aspx" target="_blank" rel="noreferrer">KBO 순위 ↗</a><a href="https://www.koreabaseball.com/Futures/Schedule/GameList.aspx" target="_blank" rel="noreferrer">잔여 일정 ↗</a></div>
+  </footer>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
