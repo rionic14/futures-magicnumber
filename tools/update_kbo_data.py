@@ -6,7 +6,9 @@ from __future__ import annotations
 import html
 import http.cookiejar
 import json
+import os
 import re
+import tempfile
 from datetime import date, datetime
 from html.parser import HTMLParser
 from pathlib import Path
@@ -121,6 +123,36 @@ def parse_remaining_games(page: str, year: int, month: int, after: date):
             yield game_date, names[0], names[1]
 
 
+def read_existing_payload(target: Path) -> dict | None:
+    if not target.exists():
+        return None
+    prefix = "window.KBO_DATA = "
+    try:
+        content = target.read_text(encoding="utf-8")
+        if not content.startswith(prefix):
+            return None
+        return json.loads(content[len(prefix):].removesuffix(";\n"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def write_atomically(target: Path, content: str) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(dir=target.parent, prefix=".data-", suffix=".js")
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as temporary:
+            temporary.write(content)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.replace(temporary_name, target)
+    except BaseException:
+        try:
+            os.unlink(temporary_name)
+        except FileNotFoundError:
+            pass
+        raise
+
+
 def main():
     today = date.today()
     year = today.year
@@ -144,7 +176,6 @@ def main():
             team["remain"] = remaining[team["name"]]
 
     payload = {
-        "updated": datetime.now().astimezone().isoformat(timespec="seconds"),
         "sourceDate": today.isoformat(),
         "leagues": {
             "north": {"title": "북부리그", "english": "NORTH LEAGUE", "color": "#174ea6", "teams": standings["north"]},
@@ -152,9 +183,25 @@ def main():
         },
         "remainingGames": games,
     }
-    target = Path(__file__).resolve().parents[1] / "data.js"
-    target.write_text("window.KBO_DATA = " + json.dumps(payload, ensure_ascii=False, indent=2) + ";\n", encoding="utf-8")
-    print(f"{target}: {len(games)}경기, {sum(remaining.values()) // 2}경기 집계")
+    target = Path(os.environ.get(
+        "KBO_DATA_PATH",
+        Path(__file__).resolve().parents[1] / "runtime" / "data.js",
+    ))
+    existing = read_existing_payload(target)
+    comparable_existing = dict(existing) if existing else None
+    if comparable_existing:
+        comparable_existing.pop("updated", None)
+    if comparable_existing == payload:
+        print(f"{target}: 변경 없음")
+        return
+
+    payload = {
+        "updated": datetime.now().astimezone().isoformat(timespec="seconds"),
+        **payload,
+    }
+    content = "window.KBO_DATA = " + json.dumps(payload, ensure_ascii=False, indent=2) + ";\n"
+    write_atomically(target, content)
+    print(f"{target}: {len(games)}경기, {sum(remaining.values()) // 2}경기 집계 · 갱신 완료")
 
 
 if __name__ == "__main__":

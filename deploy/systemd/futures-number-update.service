@@ -1,0 +1,12 @@
+[Unit]
+Description=Update KBO Futures Number data
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=rionic
+Group=rionic
+WorkingDirectory=/home/rionic/futures-magicnumber
+ExecStart=/usr/bin/python3 /home/rionic/futures-magicnumber/tools/update_kbo_data.py
+

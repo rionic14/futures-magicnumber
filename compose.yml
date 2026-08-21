@@ -4,4 +4,14 @@ services:
     container_name: futures-number
     restart: unless-stopped
     ports:
-      - "54321:54321"
+      - "127.0.0.1:54321:54321"
+    volumes:
+      - ./runtime:/usr/share/nginx/html/runtime
+    command:
+      - /bin/sh
+      - -c
+      - |
+        if [ ! -f /usr/share/nginx/html/runtime/data.js ]; then
+          cp /usr/share/nginx/html/data.js /usr/share/nginx/html/runtime/data.js
+        fi
+        exec nginx -g 'daemon off;'
