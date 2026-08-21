@@ -1,0 +1,7 @@
+services:
+  futures-number:
+    build: .
+    container_name: futures-number
+    restart: unless-stopped
+    ports:
+      - "54321:54321"
