@@ -141,6 +141,7 @@ def write_atomically(target: Path, content: str) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(dir=target.parent, prefix=".data-", suffix=".js")
     try:
+        os.fchmod(descriptor, 0o644)
         with os.fdopen(descriptor, "w", encoding="utf-8") as temporary:
             temporary.write(content)
             temporary.flush()
