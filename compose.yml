@@ -15,3 +15,21 @@ services:
           cp /usr/share/nginx/html/data.js /usr/share/nginx/html/runtime/data.js
         fi
         exec nginx -g 'daemon off;'
+
+  futures-number-updater:
+    image: python:3.13-alpine
+    container_name: futures-number-updater
+    restart: unless-stopped
+    environment:
+      KBO_DATA_PATH: /data/data.js
+    volumes:
+      - ./runtime:/data
+      - ./tools/update_kbo_data.py:/app/update_kbo_data.py:ro
+    command:
+      - /bin/sh
+      - -c
+      - |
+        while true; do
+          python3 /app/update_kbo_data.py
+          sleep 21600
+        done

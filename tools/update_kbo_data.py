@@ -9,7 +9,7 @@ import json
 import os
 import re
 import tempfile
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlencode
@@ -28,6 +28,7 @@ TEAM_COLORS = {
     "울산": "#0b4da2", "롯데": "#041e42", "NC": "#315288",
     "KIA": "#ea0029", "KT": "#231f20", "삼성": "#074ca1",
 }
+KST = timezone(timedelta(hours=9))
 
 
 class FormParser(HTMLParser):
@@ -154,7 +155,8 @@ def write_atomically(target: Path, content: str) -> None:
 
 
 def main():
-    today = date.today()
+    # 컨테이너의 기본 시간대(대개 UTC)와 관계없이 KBO 기준일은 한국 날짜로 잡는다.
+    today = datetime.now(KST).date()
     year = today.year
     client = opener()
     standings = {key: parse_standings(fetch(client, url)) for key, url in RANK_URLS.items()}
@@ -196,7 +198,7 @@ def main():
         return
 
     payload = {
-        "updated": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "updated": datetime.now(KST).isoformat(timespec="seconds"),
         **payload,
     }
     content = "window.KBO_DATA = " + json.dumps(payload, ensure_ascii=False, indent=2) + ";\n"
