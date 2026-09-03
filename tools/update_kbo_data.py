@@ -195,6 +195,7 @@ def main():
     if comparable_existing:
         comparable_existing.pop("updated", None)
     if comparable_existing == payload:
+        target.chmod(0o644)
         print(f"{target}: 변경 없음")
         return
 
