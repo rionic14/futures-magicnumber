@@ -73,7 +73,8 @@ function showRefreshDialog(title, message, canClose=false){
   $('#refreshDialogTitle').textContent=title;
   $('#refreshDialogMessage').textContent=message;
   $('#refreshDialogClose').hidden=!canClose;
-  if(!dialog.open) dialog.showModal();
+  dialog.hidden=false;
+  dialog.setAttribute('aria-hidden','false');
 }
 
 function render(key){
@@ -127,7 +128,11 @@ $('#refreshButton').addEventListener('click',async()=>{
     button.disabled=false; button.textContent='지금 결과 불러오기';
   }
 });
-$('#refreshDialogClose').addEventListener('click',()=>$('#refreshDialog').close());
+$('#refreshDialogClose').addEventListener('click',()=>{
+  const dialog=$('#refreshDialog');
+  dialog.hidden=true;
+  dialog.setAttribute('aria-hidden','true');
+});
 $('#northLeader').textContent=`1위 ${leagues.north.teams[0].name}`;
 $('#southLeader').textContent=`1위 ${leagues.south.teams[0].name}`;
 updateSourceDate();
