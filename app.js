@@ -68,6 +68,14 @@ function updateSourceDate(){
   document.querySelector('.updated b').textContent=`${year}. ${month}. ${day}`;
 }
 
+function showRefreshDialog(title, message, canClose=false){
+  const dialog=$('#refreshDialog');
+  $('#refreshDialogTitle').textContent=title;
+  $('#refreshDialogMessage').textContent=message;
+  $('#refreshDialogClose').hidden=!canClose;
+  if(!dialog.open) dialog.showModal();
+}
+
 function render(key){
   current=key; const league=leagues[key]; const leader=league.teams[0];
   document.documentElement.style.setProperty('--accent',league.color);
@@ -102,6 +110,7 @@ $('#matrixButton').addEventListener('click',()=>{
 $('#refreshButton').addEventListener('click',async()=>{
   const button=$('#refreshButton');
   button.disabled=true; button.textContent='결과 불러오는 중…';
+  showRefreshDialog('경기 결과 갱신 중', 'KBO의 최신 순위와 경기 결과를 불러오고 있습니다.');
   try{
     const response=await fetch('/api/refresh',{method:'POST'});
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -111,12 +120,14 @@ $('#refreshButton').addEventListener('click',async()=>{
     $('#southLeader').textContent=`1위 ${leagues.south.teams[0].name}`;
     updateSourceDate();
     render(current);
+    showRefreshDialog('경기 결과 갱신 완료', `${window.KBO_DATA.sourceDate} 기준 결과를 반영했습니다.`, true);
   }catch(error){
-    alert(`결과를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. (${error.message})`);
+    showRefreshDialog('경기 결과 갱신 실패', `잠시 후 다시 시도해 주세요. (${error.message})`, true);
   }finally{
     button.disabled=false; button.textContent='지금 결과 불러오기';
   }
 });
+$('#refreshDialogClose').addEventListener('click',()=>$('#refreshDialog').close());
 $('#northLeader').textContent=`1위 ${leagues.north.teams[0].name}`;
 $('#southLeader').textContent=`1위 ${leagues.south.teams[0].name}`;
 updateSourceDate();
