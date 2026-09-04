@@ -44,6 +44,15 @@ function winsToClinchRank(team, teams, targetRank){
   return null;
 }
 
+function canReachRank(team, teams, targetRank){
+  const teamMaximum=(team.w+team.remain)/(team.w+team.l+team.remain);
+  const rivalsAlreadyOutOfReach=teams.filter(t=>t!==team).filter(t=>{
+    const rivalMinimum=t.w/(t.w+t.l+t.remain);
+    return rivalMinimum>=teamMaximum;
+  }).length;
+  return rivalsAlreadyOutOfReach<targetRank;
+}
+
 function render(key){
   current=key; const league=leagues[key]; const leader=league.teams[0];
   document.documentElement.style.setProperty('--accent',league.color);
@@ -55,7 +64,8 @@ function render(key){
   $('#rankMatrixBody').innerHTML=league.teams.map((team,currentRank)=>{
     const cells=[1,2,3,4,5].map(target=>{
       const need=winsToClinchRank(team,league.teams,target);
-      const value=need===0?'<span class="matrix-value done">확정</span>':need===null?'<span class="matrix-value help">타력</span>':`<span class="matrix-value">${need}</span>`;
+      const reachable=canReachRank(team,league.teams,target);
+      const value=!reachable?'<span class="matrix-value impossible">불가</span>':need===0?'<span class="matrix-value done">확정</span>':need===null?'<span class="matrix-value help">타력</span>':`<span class="matrix-value">${need}</span>`;
       return `<td class="${target===currentRank+1?'matrix-target':''}" title="${target}위 이내 자력 확정">${value}</td>`;
     }).join('');
     return `<tr><td><div class="matrix-team"><span class="team-chip" style="--team:${team.color}"></span><div>${team.name}<small>현재 ${currentRank+1}위 · 잔여 ${team.remain}경기</small></div></div></td>${cells}</tr>`;

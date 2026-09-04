@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <style>.matrix-value.impossible{border-radius:2px;padding:0 8px;background:#f4e3e0;color:#a33a2c;font:600 10px var(--sans)}</style>
 </head>
 <body>
   <header class="site-header">
@@ -59,7 +60,7 @@
         </div>
         <aside class="formula-panel" id="matrixPanel" hidden>
           <b>숫자는 해당 순위 이내를 자력으로 확정하는 데 필요한 승리 수입니다.</b>
-          <p><strong>확정</strong>은 이미 확보, <strong>타력</strong>은 전승해도 다른 팀의 패배가 필요한 상태입니다.</p>
+          <p><strong>확정</strong>은 이미 확보, <strong>타력</strong>은 전승과 다른 팀의 패배가 필요한 상태, <strong>불가</strong>는 전승하고 다른 팀이 전패해도 도달할 수 없는 순위입니다.</p>
         </aside>
         <div class="matrix-wrap"><table class="rank-matrix"><thead><tr><th>팀 / 현재</th><th>1위</th><th>2위</th><th>3위</th><th>4위</th><th>5위</th></tr></thead><tbody id="rankMatrixBody"></tbody></table></div>
       </section>
