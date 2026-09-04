@@ -75,12 +75,13 @@ def parse_standings(page: str) -> list[dict]:
     teams = []
     for row in re.findall(r"<tr[^>]*>(.*?)</tr>", table, flags=re.S | re.I):
         cells = [text_content(c) for c in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", row, flags=re.S | re.I)]
-        if len(cells) < 7 or not cells[0].isdigit():
+        if len(cells) < 9 or not cells[0].isdigit():
             continue
         rank, name, games, wins, losses, draws = cells[:6]
         teams.append({
             "name": name, "g": int(games), "w": int(wins),
             "l": int(losses), "d": int(draws), "remain": 0,
+            "recent10": cells[8],
             "color": TEAM_COLORS.get(name, "#777777"),
         })
     if len(teams) != 6:

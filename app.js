@@ -95,7 +95,7 @@ function render(key){
     return `<tr><td><div class="matrix-team"><span class="team-chip" style="--team:${team.color}"></span><div><div class="team-heading"><span>${team.name}</span><span class="last-result">${lastResultText(team.name)}</span></div><small>현재 ${currentRank+1}위 · 잔여 ${team.remain}경기</small></div></div></td>${cells}</tr>`;
   }).join('');
   $('#standingsBody').innerHTML=league.teams.map((t,i)=>{
-    return `<tr><td><span class="rank ${i===0?'one':''}">${String(i+1).padStart(2,'0')}</span></td><td><span class="team-chip" style="--team:${t.color}"></span>${t.name}</td><td>${t.g}</td><td>${t.w}-${t.l}-${t.d}</td><td>${pct(t)}</td><td>${gamesBehind(t,leader)}</td><td class="remain">${t.remain}</td><td>${t.g+t.remain}</td></tr>`
+    return `<tr><td><span class="rank ${i===0?'one':''}">${String(i+1).padStart(2,'0')}</span></td><td><span class="team-chip" style="--team:${t.color}"></span>${t.name}</td><td>${t.g}</td><td>${t.w}-${t.l}-${t.d}</td><td>${pct(t)}</td><td>${gamesBehind(t,leader)}</td><td class="remain">${t.remain}</td><td>${t.recent10||'—'}</td><td>${t.g+t.remain}</td></tr>`
   }).join('');
 }
 
