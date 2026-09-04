@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <style>.matrix-value.impossible{border-radius:2px;padding:0 8px;background:#f4e3e0;color:#a33a2c;font:600 10px var(--sans)}</style>
+  <style>.matrix-value.impossible{border-radius:2px;padding:0 8px;background:#f4e3e0;color:#a33a2c;font:600 10px var(--sans)}.table-actions{display:flex;align-items:center;gap:12px}.refresh-button{border:0;background:var(--ink);color:#fff;padding:9px 13px;font:600 11px var(--sans);cursor:pointer}.refresh-button:disabled{cursor:wait;opacity:.55}.matrix-team .last-result{margin-top:5px;color:#555;font-size:10px;white-space:nowrap}</style>
 </head>
 <body>
   <header class="site-header">
@@ -56,7 +56,7 @@
       <section class="rank-matrix-section">
         <div class="table-headline">
           <div><span class="eyebrow">SELF-CLINCH MATRIX</span><h3>순위별 자력 확정</h3></div>
-          <button class="info-button" id="matrixButton" aria-expanded="false" aria-controls="matrixPanel">읽는 법 <span>＋</span></button>
+          <div class="table-actions"><button class="refresh-button" id="refreshButton">지금 결과 불러오기</button><button class="info-button" id="matrixButton" aria-expanded="false" aria-controls="matrixPanel">읽는 법 <span>＋</span></button></div>
         </div>
         <aside class="formula-panel" id="matrixPanel" hidden>
           <b>숫자는 해당 순위 이내를 자력으로 확정하는 데 필요한 승리 수입니다.</b>

@@ -26,10 +26,6 @@ services:
       - ./runtime:/data
       - ./tools/update_kbo_data.py:/app/update_kbo_data.py:ro
     command:
-      - /bin/sh
-      - -c
-      - |
-        while true; do
-          python3 /app/update_kbo_data.py
-          sleep 21600
-        done
+      - python3
+      - /app/update_kbo_data.py
+      - --serve

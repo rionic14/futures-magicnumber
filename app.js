@@ -23,7 +23,7 @@ const fallbackLeagues = {
   }
 };
 
-const leagues = window.KBO_DATA?.leagues || fallbackLeagues;
+let leagues = window.KBO_DATA?.leagues || fallbackLeagues;
 
 let current='north';
 const $=selector=>document.querySelector(selector);
@@ -53,6 +53,21 @@ function canReachRank(team, teams, targetRank){
   return rivalsAlreadyOutOfReach<targetRank;
 }
 
+function lastResultText(teamName){
+  const game=window.KBO_DATA?.lastResults?.[teamName];
+  if(!game) return '최근 경기 결과 없음';
+  const [year,month,day]=game.date.split('-').map(Number);
+  const weekday=['일','월','화','수','목','금','토'][new Date(year,month-1,day).getDay()];
+  return `${month}/${day}(${weekday}) ${game.away} ${game.awayScore} - ${game.homeScore} ${game.home}`;
+}
+
+function updateSourceDate(){
+  if(!window.KBO_DATA?.sourceDate) return;
+  const [year,month,day]=window.KBO_DATA.sourceDate.split('-');
+  $('#headerDate').textContent=`${month}.${day} 기준`;
+  document.querySelector('.updated b').textContent=`${year}. ${month}. ${day}`;
+}
+
 function render(key){
   current=key; const league=leagues[key]; const leader=league.teams[0];
   document.documentElement.style.setProperty('--accent',league.color);
@@ -68,7 +83,7 @@ function render(key){
       const value=!reachable?'<span class="matrix-value impossible">불가</span>':need===0?'<span class="matrix-value done">확정</span>':need===null?'<span class="matrix-value help">타력</span>':`<span class="matrix-value">${need}</span>`;
       return `<td class="${target===currentRank+1?'matrix-target':''}" title="${target}위 이내 자력 확정">${value}</td>`;
     }).join('');
-    return `<tr><td><div class="matrix-team"><span class="team-chip" style="--team:${team.color}"></span><div>${team.name}<small>현재 ${currentRank+1}위 · 잔여 ${team.remain}경기</small></div></div></td>${cells}</tr>`;
+    return `<tr><td><div class="matrix-team"><span class="team-chip" style="--team:${team.color}"></span><div>${team.name}<small>현재 ${currentRank+1}위 · 잔여 ${team.remain}경기</small><small class="last-result">${lastResultText(team.name)}</small></div></div></td>${cells}</tr>`;
   }).join('');
   $('#standingsBody').innerHTML=league.teams.map((t,i)=>{
     return `<tr><td><span class="rank ${i===0?'one':''}">${String(i+1).padStart(2,'0')}</span></td><td><span class="team-chip" style="--team:${t.color}"></span>${t.name}</td><td>${t.g}</td><td>${t.w}-${t.l}-${t.d}</td><td>${pct(t)}</td><td>${gamesBehind(t,leader)}</td><td class="remain">${t.remain}</td><td>${t.g+t.remain}</td></tr>`
@@ -84,11 +99,25 @@ $('#matrixButton').addEventListener('click',()=>{
   const panel=$('#matrixPanel'), open=panel.hidden;
   panel.hidden=!open; $('#matrixButton').setAttribute('aria-expanded',open); $('#matrixButton span').textContent=open?'−':'＋';
 });
+$('#refreshButton').addEventListener('click',async()=>{
+  const button=$('#refreshButton');
+  button.disabled=true; button.textContent='결과 불러오는 중…';
+  try{
+    const response=await fetch('/api/refresh',{method:'POST'});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    window.KBO_DATA=await response.json();
+    leagues=window.KBO_DATA.leagues;
+    $('#northLeader').textContent=`1위 ${leagues.north.teams[0].name}`;
+    $('#southLeader').textContent=`1위 ${leagues.south.teams[0].name}`;
+    updateSourceDate();
+    render(current);
+  }catch(error){
+    alert(`결과를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요. (${error.message})`);
+  }finally{
+    button.disabled=false; button.textContent='지금 결과 불러오기';
+  }
+});
 $('#northLeader').textContent=`1위 ${leagues.north.teams[0].name}`;
 $('#southLeader').textContent=`1위 ${leagues.south.teams[0].name}`;
-if(window.KBO_DATA?.sourceDate){
-  const [year,month,day]=window.KBO_DATA.sourceDate.split('-');
-  $('#headerDate').textContent=`${month}.${day} 기준`;
-  document.querySelector('.updated b').textContent=`${year}. ${month}. ${day}`;
-}
+updateSourceDate();
 render(current);
